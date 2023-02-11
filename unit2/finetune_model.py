@@ -31,7 +31,7 @@ def train(
 
 
     # Prepare pretrained model
-    image_pipe = DDPMPipeline.from_pretrained(start_model);
+    image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token="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");
     image_pipe.to(device)
     
     # Get a scheduler for sampling
