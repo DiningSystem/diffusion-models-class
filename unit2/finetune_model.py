@@ -115,6 +115,6 @@ def train(
 
     # Save the pipeline one last time
     image_pipe.save_pretrained(model_save_name)
-    
+    image_pipe.push_to_hub(start_model, "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")
     # Wrap up the run
     wandb.finish()
