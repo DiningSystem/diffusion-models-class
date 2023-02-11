@@ -35,7 +35,7 @@ def train(
     image_pipe.to(device)
     
     # Get a scheduler for sampling
-    sampling_scheduler = DDIMScheduler.from_config(start_model)
+    sampling_scheduler = DDIMScheduler.from_config(start_model, use_auth_token="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")
     sampling_scheduler.set_timesteps(num_inference_steps=50)
 
     # Prepare dataset
