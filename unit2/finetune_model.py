@@ -31,11 +31,11 @@ def train(
 
 
     # Prepare pretrained model
-    image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token="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");
+    image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token=True);
     image_pipe.to(device)
     
     # Get a scheduler for sampling
-    sampling_scheduler = DDIMScheduler.from_config(start_model, use_auth_token="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")
+    sampling_scheduler = DDIMScheduler.from_config(start_model, use_auth_token=True)
     sampling_scheduler.set_timesteps(num_inference_steps=50)
 
     # Prepare dataset
