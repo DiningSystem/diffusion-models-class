@@ -64,8 +64,8 @@ def train(
     # Optimizer & lr scheduler
     optimizer = torch.optim.AdamW(image_pipe.unet.parameters(), lr=1e-5)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
-    image_pipe, optimizer, training_dataloader, scheduler = accelerator.prepare(
-          image_pipe, optimizer, training_dataloader, scheduler
+    image_pipe, optimizer, train_dataloader, scheduler = accelerator.prepare(
+          image_pipe, optimizer, train_dataloader, scheduler
       )
     for epoch in range(num_epochs):
         for step, batch in tqdm(enumerate(train_dataloader), total=len(train_dataloader)):
