@@ -29,13 +29,15 @@ def train(
     # Initialize wandb for logging
     wandb.init(project=wandb_project, config=locals())
 
-
+    unet = UNet2DModel.from_pretrained(start_model, sub_folder="unet")
+    sampling_schedule = DDIMScheduler.from_pretrained(start_model, sub_folder="scheduler")
     # Prepare pretrained model
-    image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token=True);
+    image_pipe = DDPMPipeline(unet, sampling_schedule)
+    #image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token=True)
     image_pipe.to(device)
     
     # Get a scheduler for sampling
-    sampling_scheduler = DDIMScheduler.from_config(start_model, use_auth_token=True)
+    #sampling_scheduler = DDIMScheduler.from_config(start_model, use_auth_token=True)
     sampling_scheduler.set_timesteps(num_inference_steps=50)
 
     # Prepare dataset
