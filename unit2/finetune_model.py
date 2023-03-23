@@ -6,7 +6,7 @@ from PIL import Image
 from tqdm.auto import tqdm
 from fastcore.script import call_parse
 from torchvision import transforms
-from diffusers import DDPMPipeline
+from diffusers import DDPMPipeline, UNet2DModel
 from diffusers import DDIMScheduler
 from datasets import load_dataset
 from matplotlib import pyplot as plt
