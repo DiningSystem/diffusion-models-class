@@ -30,7 +30,7 @@ def train(
     wandb.init(project=wandb_project, config=locals())
 
     unet = UNet2DModel.from_pretrained(start_model, subfolder="unet")
-    sampling_schedule = DDIMScheduler.from_pretrained(start_model, subfolder="scheduler")
+    sampling_scheduler = DDIMScheduler.from_pretrained(start_model, subfolder="scheduler")
     # Prepare pretrained model
     image_pipe = DDPMPipeline(unet, sampling_schedule)
     #image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token=True)
