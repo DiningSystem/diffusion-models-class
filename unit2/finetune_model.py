@@ -37,7 +37,7 @@ def train(
     #image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token=True)
     torch.cuda.set_device(0)
     torch.cuda.set_device(1)
-    image_pipe= torch.nn.parallel.DistributedDataParallel(image_pipe, device_ids = [0, 1])
+    #image_pipe= torch.nn.parallel.DistributedDataParallel(image_pipe, device_ids = [0, 1])
     image_pipe.to(device)
     
     # Get a scheduler for sampling
