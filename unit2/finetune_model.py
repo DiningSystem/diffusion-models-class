@@ -34,6 +34,7 @@ def train(
     # Prepare pretrained model
     image_pipe = DDPMPipeline(unet, sampling_scheduler)
     #image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token=True)
+    image_pipe= nn.DataParallel(image_pipe)
     image_pipe.to(device)
     
     # Get a scheduler for sampling
