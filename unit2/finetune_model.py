@@ -35,7 +35,8 @@ def train(
     # Prepare pretrained model
     image_pipe = DDPMPipeline(unet, sampling_scheduler)
     #image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token=True)
-    image_pipe= torch.nn.DataParallel(image_pipe)
+    device = torch.device("cuda:0,1" if torch.cuda.is_available() else "cpu")
+    image_pipe= torch.nn.DataParallel(image_pipe, device_ids = [0, 1])
     image_pipe.to(device)
     
     # Get a scheduler for sampling
