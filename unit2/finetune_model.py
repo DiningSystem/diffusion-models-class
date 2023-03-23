@@ -60,9 +60,8 @@ def train(
     dataset.set_transform(transform)
     train_dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-
     # Optimizer & lr scheduler
-    optimizer = torch.optim.AdamW(image_pipe.module.unet.parameters(), lr=1e-5)
+    optimizer = torch.optim.AdamW(image_pipe.unet.parameters(), lr=1e-5)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
 
     for epoch in range(num_epochs):
@@ -76,14 +75,14 @@ def train(
             bs = clean_images.shape[0]
 
             # Sample a random timestep for each image
-            timesteps = torch.randint(0, image_pipe.module.scheduler.num_train_timesteps, (bs,), device=clean_images.device).long()
+            timesteps = torch.randint(0, image_pipe.scheduler.num_train_timesteps, (bs,), device=clean_images.device).long()
 
             # Add noise to the clean images according to the noise magnitude at each timestep
             # (this is the forward diffusion process)
-            noisy_images = image_pipe.module.scheduler.add_noise(clean_images, noise, timesteps)
+            noisy_images = image_pipe.scheduler.add_noise(clean_images, noise, timesteps)
 
             # Get the model prediction for the noise
-            noise_pred = image_pipe.module.unet(noisy_images, timesteps, return_dict=False)[0]
+            noise_pred = image_pipe.unet(noisy_images, timesteps, return_dict=False)[0]
 
             # Compare the prediction with the actual noise:
             loss = F.mse_loss(noise_pred, noise)
@@ -105,7 +104,7 @@ def train(
                 for i, t in tqdm(enumerate(sampling_scheduler.timesteps)):
                     model_input = sampling_scheduler.scale_model_input(x, t)
                     with torch.no_grad():
-                        noise_pred = image_pipe.module.unet(model_input, t)["sample"]
+                        noise_pred = image_pipe.unet(model_input, t)["sample"]
                     x = sampling_scheduler.step(noise_pred, t, x).prev_sample
                 grid = torchvision.utils.make_grid(x, nrow=4)
                 im = grid.permute(1, 2, 0).cpu().clip(-1, 1)*0.5 + 0.5
@@ -114,13 +113,13 @@ def train(
                 
             # Occasionally save model
             if (step+1)%save_model_every == 0:
-                image_pipe.module.save_pretrained(model_save_name+f'step_{step+1}')
+                image_pipe.save_pretrained(model_save_name+f'step_{step+1}')
 
         # Update the learning rate for the next epoch
         scheduler.step()
 
     # Save the pipeline one last time
-    image_pipe.module.save_pretrained(model_save_name)
-    image_pipe.module.push_to_hub(start_model, "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")
+    image_pipe.save_pretrained(model_save_name)
+    image_pipe.push_to_hub(start_model, "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")
     # Wrap up the run
     wandb.finish()
