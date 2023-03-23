@@ -10,7 +10,7 @@ from diffusers import DDPMPipeline, UNet2DModel
 from diffusers import DDIMScheduler
 from datasets import load_dataset
 from matplotlib import pyplot as plt
-
+from accelerate import Accelerator
 @call_parse
 def train(
     image_size = 256,
@@ -26,6 +26,7 @@ def train(
     save_model_every = 2500,
     ):
         
+    accelerator = Accelerator()
     # Initialize wandb for logging
     wandb.init(project=wandb_project, config=locals())
 
@@ -63,7 +64,9 @@ def train(
     # Optimizer & lr scheduler
     optimizer = torch.optim.AdamW(image_pipe.unet.parameters(), lr=1e-5)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
-
+    image_pipe, optimizer, training_dataloader, scheduler = accelerator.prepare(
+          image_pipe, optimizer, training_dataloader, scheduler
+      )
     for epoch in range(num_epochs):
         for step, batch in tqdm(enumerate(train_dataloader), total=len(train_dataloader)):
 
