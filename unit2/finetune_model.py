@@ -71,7 +71,7 @@ def train(
         for step, batch in tqdm(enumerate(train_dataloader), total=len(train_dataloader)):
 
             # Get the clean images
-            clean_images = batch['images'].to(device)
+            clean_images = batch['images']
 
             # Sample noise to add to the images
             noise = torch.randn(clean_images.shape).to(clean_images.device)
@@ -94,7 +94,8 @@ def train(
             wandb.log({'loss':loss.item()})
 
             # Calculate the gradients
-            loss.backward()
+            #loss.backward()
+            accelerator.backward(loss)
 
             # Gradient Acccumulation: Only update every grad_accumulation_steps 
             if (step+1)%grad_accumulation_steps == 0:
