@@ -62,7 +62,7 @@ def train(
     train_dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     # Optimizer & lr scheduler
-    optimizer = torch.optim.AdamW(image_pipe.unet.parameters(), lr=1e-5)
+    optimizer = torch.optim.AdamW(unet.parameters(), lr=1e-5)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
     unet, sampling_scheduler, optimizer, train_dataloader, scheduler = accelerator.prepare(
           unet, sampling_scheduler, optimizer, train_dataloader, scheduler
