@@ -34,7 +34,7 @@ def train(
     sampling_scheduler = DDIMScheduler.from_pretrained(start_model, subfolder="scheduler")
     sampling_scheduler.set_timesteps(num_inference_steps=50)
     # Prepare pretrained model
-    image_pipe = DDPMPipeline(unet, sampling_scheduler)
+    #image_pipe = DDPMPipeline(unet, sampling_scheduler)
     #image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token=True)
     #torch.cuda.set_device(0)
     #torch.cuda.set_device(1)
@@ -64,9 +64,10 @@ def train(
     # Optimizer & lr scheduler
     optimizer = torch.optim.AdamW(image_pipe.unet.parameters(), lr=1e-5)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
-    image_pipe, optimizer, train_dataloader, scheduler = accelerator.prepare(
-          image_pipe, optimizer, train_dataloader, scheduler
+    unet, sampling_scheduler, optimizer, train_dataloader, scheduler = accelerator.prepare(
+          unet, sampling_scheduler, optimizer, train_dataloader, scheduler
       )
+    image_pipe = DDPMPipeline(unet, sampling_scheduler)
     for epoch in range(num_epochs):
         for step, batch in tqdm(enumerate(train_dataloader), total=len(train_dataloader)):
 
