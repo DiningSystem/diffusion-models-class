@@ -118,14 +118,14 @@ def train(
                 
             # Occasionally save model
             if (step+1)%save_model_every == 0:
-                #image_pipe.save_pretrained(model_save_name+f'step_{step+1}')
-                image_pipe.push_to_hub(model_save_name+f'step_{step+1}', "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")
+                image_pipe.save_pretrained(model_save_name+f'step_{step+1}'push_to_hub=True)
+                #image_pipe.push_to_hub(model_save_name+f'step_{step+1}', "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")
 
         # Update the learning rate for the next epoch
         scheduler.step()
 
     # Save the pipeline one last time
-    #image_pipe.save_pretrained(model_save_name)
-    image_pipe.push_to_hub(start_model, "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")
+    image_pipe.save_pretrained(model_save_name)
+    #image_pipe.push_to_hub(start_model, "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")
     # Wrap up the run
     wandb.finish()
