@@ -30,20 +30,20 @@ def train(
     # Initialize wandb for logging
     wandb.init(project=wandb_project, config=locals())
 
-    unet = UNet2DModel.from_pretrained(start_model, subfolder="unet")
-    sampling_scheduler = DDIMScheduler.from_pretrained(start_model, subfolder="scheduler")
-    sampling_scheduler.set_timesteps(num_inference_steps=50)
+    #unet = UNet2DModel.from_pretrained(start_model, subfolder="unet")
+    #sampling_scheduler = DDIMScheduler.from_pretrained(start_model, subfolder="scheduler")
+    #sampling_scheduler.set_timesteps(num_inference_steps=50)
     # Prepare pretrained model
     #image_pipe = DDPMPipeline(unet, sampling_scheduler)
-    #image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token=True)
+    image_pipe = DDPMPipeline.from_pretrained(start_model, use_auth_token=True)
     #torch.cuda.set_device(0)
     #torch.cuda.set_device(1)
     #image_pipe= torch.nn.parallel.DistributedDataParallel(image_pipe, device_ids = [0, 1])
     #image_pipe.to(device)
     
     # Get a scheduler for sampling
-    #sampling_scheduler = DDIMScheduler.from_config(start_model, use_auth_token=True)
-    
+    sampling_scheduler = DDIMScheduler.from_config(start_model, use_auth_token=True)
+    sampling_scheduler.set_timesteps(num_inference_steps=500)
 
     # Prepare dataset
     dataset = load_dataset(dataset_name, split="train")
@@ -62,12 +62,12 @@ def train(
     train_dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     # Optimizer & lr scheduler
-    optimizer = torch.optim.AdamW(unet.parameters(), lr=1e-5)
+    optimizer = torch.optim.AdamW(image_pipe.unet.parameters(), lr=1e-5)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
-    unet, sampling_scheduler, optimizer, train_dataloader, scheduler = accelerator.prepare(
-          unet, sampling_scheduler, optimizer, train_dataloader, scheduler
+    image_pipe.unet, sampling_scheduler, optimizer, train_dataloader, scheduler = accelerator.prepare(
+          image_pipe.unet, sampling_scheduler, optimizer, train_dataloader, scheduler
       )
-    image_pipe = DDPMPipeline(unet, sampling_scheduler)
+    #image_pipe = DDPMPipeline(unet, sampling_scheduler)
     for epoch in range(num_epochs):
         for step, batch in tqdm(enumerate(train_dataloader), total=len(train_dataloader)):
 
